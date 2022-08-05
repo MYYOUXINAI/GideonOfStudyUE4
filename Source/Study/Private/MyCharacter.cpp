@@ -5,6 +5,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MyInteractionComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -22,6 +23,9 @@ AMyCharacter::AMyCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
+
+	InteractionComp = CreateDefaultSubobject<UMyInteractionComponent>("InteractionComp");
+
 }
 
 // Called when the game starts or when spawned
@@ -54,6 +58,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("MyLookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("MyPrimaryAttack",IE_Pressed, this, &AMyCharacter::MyPrimaryAttack);
+
+	PlayerInputComponent->BindAction("MyPrimaryInteraction", IE_Pressed, this, &AMyCharacter::MyPrimaryInteraction);
 }
 
 //控制角色向前移动
@@ -78,6 +84,8 @@ void AMyCharacter::MyTurnRight(float Value)
 
 void AMyCharacter::MyPrimaryAttack()
 {
+	PlayAnimMontage(AttackAnim);
+
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
 	FTransform SpawnTM = FTransform(GetActorRotation(), HandLocation);
@@ -86,6 +94,14 @@ void AMyCharacter::MyPrimaryAttack()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+}
+
+void AMyCharacter::MyPrimaryInteraction()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();
+	}
 }
 
 

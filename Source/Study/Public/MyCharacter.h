@@ -9,6 +9,8 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UMyInteractionComponent;
+class UAnimMontage;
 
 UCLASS()
 class STUDY_API AMyCharacter : public ACharacter
@@ -21,8 +23,11 @@ public:
 
 
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="MyAttack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "MyAttack")
+	UAnimMontage* AttackAnim;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,11 +39,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
+	UPROPERTY(VisibleAnywhere)
+	UMyInteractionComponent* InteractionComp;
+
 	void MyMoveForward(float Value);
 
 	void MyTurnRight(float Value);
 
 	void MyPrimaryAttack();
+
+	void MyPrimaryInteraction();
 
 public:	
 	// Called every frame

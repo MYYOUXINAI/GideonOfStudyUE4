@@ -45,7 +45,6 @@ void AMyExplosiveBarrel::BeginPlay()
 void AMyExplosiveBarrel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AMyExplosiveBarrel::PostInitializeComponents()
