@@ -42,15 +42,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UMyInteractionComponent* InteractionComp;
 
-	FTimerHandle TimerHandle_PrimaryAttack;
-
 	void MyMoveForward(float Value);
 
 	void MyTurnRight(float Value);
 
 	void MyPrimaryAttack();
-
-	void PrimaryAttack_TimeElapsed();
 
 	void MyPrimaryInteraction();
 
