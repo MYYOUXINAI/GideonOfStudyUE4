@@ -76,12 +76,12 @@ void UMyInteractionComponent::PrimaryInteract()
 
 				IMyInterface::Execute_Interact(HitActor, MyApawn);
 
-				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, ResColor, false, 2.0f);
+				//DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, ResColor, false, 2.0f);
 
 				break;
 			}
 		}
 	}
 
-	DrawDebugLine(GetWorld(), EyeLocation, End, ResColor, false, 2.0f, 0, 2.0f);
+	//DrawDebugLine(GetWorld(), EyeLocation, End, ResColor, false, 2.0f, 0, 2.0f);
 }

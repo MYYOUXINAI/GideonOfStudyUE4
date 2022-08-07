@@ -57,7 +57,7 @@ void AMyExplosiveBarrel::PostInitializeComponents()
 
 void AMyExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	ForceComp->FireImpulse();
+	//ForceComp->FireImpulse();
 
 	UE_LOG(LogTemp, Log, TEXT("OnActorHit in Explosive Barrel"));
 
