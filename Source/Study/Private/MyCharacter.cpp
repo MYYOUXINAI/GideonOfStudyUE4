@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MyInteractionComponent.h"
+#include "MyAttributeComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -25,6 +26,8 @@ AMyCharacter::AMyCharacter()
 	bUseControllerRotationYaw = false;
 
 	InteractionComp = CreateDefaultSubobject<UMyInteractionComponent>("InteractionComp");
+
+	AttributeComp = CreateDefaultSubobject<UMyAttributeComponent>("AttributeComp");
 	
 }
 
@@ -56,6 +59,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("MyTurn", this, &APawn::AddControllerYawInput);
 
 	PlayerInputComponent->BindAxis("MyLookUp", this, &APawn::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAction("MyJump", IE_Pressed, this, &AMyCharacter::Jump);
 
 	PlayerInputComponent->BindAction("MyPrimaryAttack",IE_Pressed, this, &AMyCharacter::MyPrimaryAttack);
 
@@ -92,13 +97,19 @@ void AMyCharacter::MyPrimaryAttack()
 
 void AMyCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTM = FTransform(GetActorRotation(), HandLocation);
+	if (ensure(ProjectileClass))
+	{
+		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+		//FTransform SpawnTM = FTransform(GetActorRotation(), HandLocation);
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	}
 }
 
 void AMyCharacter::MyPrimaryInteraction()
@@ -107,6 +118,11 @@ void AMyCharacter::MyPrimaryInteraction()
 	{
 		InteractionComp->PrimaryInteract();
 	}
+}
+
+void AMyCharacter::MyJump()
+{
+
 }
 
 

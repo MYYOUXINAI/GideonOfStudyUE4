@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UMyInteractionComponent;
 class UAnimMontage;
+class UMyAttributeComponent;
 
 UCLASS()
 class STUDY_API AMyCharacter : public ACharacter
@@ -42,6 +43,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UMyInteractionComponent* InteractionComp;
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Component")
+	UMyAttributeComponent* AttributeComp;
+
 	FTimerHandle TimerHandle_PrimaryAttack;
 
 	void MyMoveForward(float Value);
@@ -53,6 +57,8 @@ protected:
 	void PrimaryAttack_TimeElapsed();
 
 	void MyPrimaryInteraction();
+
+	void MyJump();
 
 public:	
 	// Called every frame
