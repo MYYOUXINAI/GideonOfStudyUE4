@@ -76,6 +76,11 @@ protected:
 
 	void SpawnProjectile(TSubclassOf<AActor>ClassToSpawn);
 
+	UFUNCTION()
+		void OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	virtual void PostInitializeComponents()override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

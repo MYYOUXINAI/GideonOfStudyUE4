@@ -32,6 +32,14 @@ AMyCharacter::AMyCharacter()
 	
 }
 
+
+void AMyCharacter::PostInitializeComponents()
+{
+
+	Super::PostInitializeComponents();
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AMyCharacter::OnHealthChanged);
+}
+
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
@@ -139,40 +147,6 @@ void AMyCharacter::MyPrimaryInteraction()
 
 void AMyCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 {
-	/*if (ensure(ClassToSpawn))
-	{
-		FVector HandleLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-
-		FCollisionShape Shape;
-		Shape.SetSphere(20.f);
-
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-
-		FCollisionObjectQueryParams ObjParams;
-		ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjParams.AddObjectTypesToQuery(ECC_Pawn);
-
-		FVector TraceStart = CameraComp->GetComponentLocation();
-		FVector TraceEnd = CameraComp->GetComponentLocation() + GetControlRotation().Vector() * 5000;
-
-		FHitResult Hit;
-		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params))
-		{
-			TraceEnd = Hit.ImpactPoint;
-		}
-
-		FRotator ProjectileRotation = FRotationMatrix::MakeFromX(TraceEnd - HandleLocation).Rotator();
-
-		FTransform SpawnTM = FTransform(ProjectileRotation, HandleLocation);
-		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
-	}*/
-
 	if (ensureAlways(ClassToSpawn))
 	{
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
@@ -194,7 +168,7 @@ void AMyCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 		ObjParams.AddObjectTypesToQuery(ECC_Pawn);
 
 		FVector TraceStart = CameraComp->GetComponentLocation();
-
+		
 		// endpoint far into the look-at distance (not too far, still adjust somewhat towards crosshair on a miss)
 		FVector TraceEnd = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
 
@@ -213,5 +187,15 @@ void AMyCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
 	}
 }
+
+void AMyCharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (NewHealth < 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}
+}
+
 
 

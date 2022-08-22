@@ -15,6 +15,11 @@ UMyAttributeComponent::UMyAttributeComponent()
 
 
 
+bool UMyAttributeComponent::IsAlive()const
+{
+	return this->Health > 0;
+}
+
 bool UMyAttributeComponent::ApplyHealthChange(float Delta)
 {
 	this->Health += Delta;

@@ -26,6 +26,8 @@ AMyMagicProjectile::AMyMagicProjectile()
 	SphereComp->SetCollisionProfileName("MyProjectile");
 
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMyMagicProjectile::OnActorOverlap);
+
+	this->DamageValue = 50;
 }
 
 // Called when the game starts or when spawned
@@ -44,7 +46,7 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 
 		if (AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-15.0f);
+			AttributeComp->ApplyHealthChange(DamageValue);
 			
 			this->Destroy();
 		}

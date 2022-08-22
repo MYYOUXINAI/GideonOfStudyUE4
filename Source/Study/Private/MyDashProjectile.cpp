@@ -37,7 +37,7 @@ void AMyDashProjectile::Explode_Implementation()
 
 	FTimerHandle TimerHandle_DelayedTeleport;
 	GetWorldTimerManager().SetTimer(TimerHandle_DelayedTeleport, this, &AMyDashProjectile::TeleportInstigator, TeleportDelay);
-
+	
 }
 
 void AMyDashProjectile::TeleportInstigator()
