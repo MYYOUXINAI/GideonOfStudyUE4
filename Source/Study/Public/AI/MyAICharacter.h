@@ -7,6 +7,7 @@
 #include "MyAICharacter.generated.h"
 
 class UPawnSensingComponent;
+class UMyAttributeComponent;
 
 UCLASS()
 class STUDY_API AMyAICharacter : public ACharacter
@@ -23,6 +24,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere,Category="AI")
 	UPawnSensingComponent* PawnSensingComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	UMyAttributeComponent* AttributeComp;
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);

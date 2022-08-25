@@ -24,6 +24,11 @@ public:
 
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName TimeToHitParamName;
+
+
 	UPROPERTY(EditAnywhere, Category = "MyAttack")
 	TSubclassOf<AActor>DashProjectile;
 
@@ -77,7 +82,7 @@ protected:
 	void SpawnProjectile(TSubclassOf<AActor>ClassToSpawn);
 
 	UFUNCTION()
-		void OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta);
+	void OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 	virtual void PostInitializeComponents()override;
 

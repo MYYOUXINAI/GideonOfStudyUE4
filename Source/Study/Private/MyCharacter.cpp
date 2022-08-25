@@ -29,6 +29,8 @@ AMyCharacter::AMyCharacter()
 	InteractionComp = CreateDefaultSubobject<UMyInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<UMyAttributeComponent>("AttributeComp");
+
+	TimeToHitParamName = "TimeToHit";
 	
 }
 
@@ -190,6 +192,12 @@ void AMyCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 
 void AMyCharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
+
+	if (Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+	}
+
 	if (NewHealth < 0.0f && Delta < 0.0f)
 	{
 		APlayerController* PC = Cast<APlayerController>(GetController());

@@ -20,12 +20,32 @@ bool UMyAttributeComponent::IsAlive()const
 	return this->Health > 0;
 }
 
+bool UMyAttributeComponent::IsFullHealth() const
+{
+	return this->Health==this->HealthMax;
+}
+
+float UMyAttributeComponent::GetMaxHealth() const
+{
+	return this->HealthMax;
+}
+
 bool UMyAttributeComponent::ApplyHealthChange(float Delta)
 {
-	this->Health += Delta;
+	/*this->Health += Delta;
 
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 
-	return true;
+	return true;*/
+
+	float OldHealth = this->Health;
+
+	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
+
+	float ActualDelta = Health - OldHealth;
+
+	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
+
+	return ActualDelta != 0;
 }
 
