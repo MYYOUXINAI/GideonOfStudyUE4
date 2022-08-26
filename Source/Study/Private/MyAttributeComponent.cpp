@@ -3,6 +3,8 @@
 
 #include "MyAttributeComponent.h"
 
+
+
 // Sets default values for this component's properties
 UMyAttributeComponent::UMyAttributeComponent()
 {
@@ -35,7 +37,7 @@ float UMyAttributeComponent::GetCurrentHealth() const
 	return this->Health;
 }
 
-bool UMyAttributeComponent::ApplyHealthChange(float Delta)
+bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	/*this->Health += Delta;
 
@@ -49,8 +51,29 @@ bool UMyAttributeComponent::ApplyHealthChange(float Delta)
 
 	float ActualDelta = Health - OldHealth;
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
 	return ActualDelta != 0;
 }
 
+UMyAttributeComponent* UMyAttributeComponent::GetAttributes(AActor* FromActor)
+{
+	if (FromActor)
+	{
+		return Cast<UMyAttributeComponent>(FromActor->GetComponentByClass(UMyAttributeComponent::StaticClass()));
+	}
+
+	return nullptr;
+}
+
+bool UMyAttributeComponent::IsActorAlive(AActor* FromActor)
+{
+	UMyAttributeComponent* AttributeComp = UMyAttributeComponent::GetAttributes(FromActor);
+
+	if (AttributeComp)
+	{
+		return AttributeComp->IsAlive();
+	}
+
+	return false;
+}

@@ -33,8 +33,8 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UParticleSystemComponent* EffectComp;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
-	//UAudioComponent* AudioComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
+	UAudioComponent* AudioComp;
 
 	UPROPERTY(EditAnywhere,Category="Attack")
 	float DamageValue;

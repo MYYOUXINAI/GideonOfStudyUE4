@@ -33,12 +33,12 @@ AMyMagicProjectile::AMyMagicProjectile()
 	this->DamageValue = -50;
 
 
-	/*AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
 	AudioComp->SetupAttachment(RootComponent);
 	if (ensure(AudioComp))
 	{
 		AudioComp->Play();
-	}*/
+	}
 
 }
 
@@ -62,7 +62,7 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 		if (AttributeComp)
 		{
 
-			AttributeComp->ApplyHealthChange(DamageValue);
+			AttributeComp->ApplyHealthChange(GetInstigator(), DamageValue);
 
 			if (ensure(!IsPendingKill()))
 			{

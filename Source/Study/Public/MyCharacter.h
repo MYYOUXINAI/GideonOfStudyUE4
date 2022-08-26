@@ -51,7 +51,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UCameraComponent* CameraComp;
 
 	UPROPERTY(VisibleAnywhere)

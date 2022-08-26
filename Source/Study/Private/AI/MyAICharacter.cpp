@@ -17,6 +17,8 @@ AMyAICharacter::AMyAICharacter()
 	AttributeComp = CreateDefaultSubobject<UMyAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	TimeToHitParamName = "TimeToHit";
 }
 
 void AMyAICharacter::PostInitializeComponents()
@@ -29,15 +31,27 @@ void AMyAICharacter::PostInitializeComponents()
 
 void AMyAICharacter::OnPawnSeen(APawn* Pawn)
 {
+	//AAIController* AIC = Cast<AAIController>(GetController());
+
+	//if (AIC)
+	//{
+	//	UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
+
+	//	BBComp->SetValueAsObject("TargetActor", Pawn);
+	//	BBComp->SetValueAsVector("MoveToLocation", Pawn->GetActorLocation());
+	//	//DrawDebugString(GetWorld(), GetActorLocation(), "Player Spotted", nullptr, FColor::White, 4.0f, true);
+	//}
+
+	this->SetTargetActor(Pawn);
+}
+
+void AMyAICharacter::SetTargetActor(AActor* NewTarget)
+{
 	AAIController* AIC = Cast<AAIController>(GetController());
 
 	if (AIC)
 	{
-		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
-
-		BBComp->SetValueAsObject("TargetActor", Pawn);
-		BBComp->SetValueAsVector("MoveToLocation", Pawn->GetActorLocation());
-		DrawDebugString(GetWorld(), GetActorLocation(), "Player Spotted", nullptr, FColor::White, 4.0f, true);
+		AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
 	}
 }
 
@@ -45,6 +59,16 @@ void AMyAICharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeCompon
 {
 	if (Delta < 0.0f)
 	{
+
+		if (InstigatorActor != this)
+		{
+			this->SetTargetActor(InstigatorActor);
+		}
+
+
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+
+
 		if (NewHealth <= 0.0f)
 		{
 			//Stop Behavior

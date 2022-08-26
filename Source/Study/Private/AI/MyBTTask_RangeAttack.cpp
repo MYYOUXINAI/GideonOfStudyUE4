@@ -4,11 +4,19 @@
 #include "AI/MyBTTask_RangeAttack.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
+#include "MyAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+
+
+UMyBTTask_RangeAttack::UMyBTTask_RangeAttack()
+{
+	this->MaxBulletSpread = 2.0f;
+}
+
 
 EBTNodeResult::Type UMyBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	if (false)
+	/*if (false)
 	{
 		AAIController* MyController = OwnerComp.GetAIOwner();
 		if (ensure(MyController))
@@ -42,7 +50,7 @@ EBTNodeResult::Type UMyBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& O
 		}
 
 		return EBTNodeResult::Failed;
-	}
+	}*/
 
 	AAIController* MyController = OwnerComp.GetAIOwner();
 	if (ensure(MyController))
@@ -53,8 +61,8 @@ EBTNodeResult::Type UMyBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& O
 			return EBTNodeResult::Failed;
 		}
 
-		//FVector MuzzleLocation = MyPawn->GetMesh()->GetSocketLocation("Muzzle_01");
-		FVector MuzzleLocation = MyPawn->GetMesh()->GetSocketLocation("Muzzle_Front_XForward"); 
+		FVector MuzzleLocation = MyPawn->GetMesh()->GetSocketLocation("Muzzle_01");
+		//FVector MuzzleLocation = MyPawn->GetMesh()->GetSocketLocation("Muzzle_Front_XForward"); 
 
 		AActor* TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetActor"));
 		if (TargetActor == nullptr)
@@ -62,17 +70,27 @@ EBTNodeResult::Type UMyBTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& O
 			return EBTNodeResult::Failed;
 		}
 
+		if (!UMyAttributeComponent::IsActorAlive(TargetActor))
+		{
+			return EBTNodeResult::Failed;
+		}
+
 		FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
 		FRotator MuzzleRotation = Direction.Rotation();
+
+		MuzzleRotation.Pitch += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
+		MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
+
 
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		Params.Instigator = MyPawn;
 
 		AActor* NewProj = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, MuzzleRotation, Params);
-
+		
 		return NewProj ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 	}
 
 	return EBTNodeResult::Failed;
 }
+

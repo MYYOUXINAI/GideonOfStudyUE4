@@ -20,6 +20,9 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere,Category="Effect")
+	FName TimeToHitParamName;
+
 	virtual void PostInitializeComponents()override;
 
 	UPROPERTY(VisibleAnywhere,Category="AI")
@@ -30,6 +33,10 @@ protected:
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION()
+	void SetTargetActor(AActor* NewTarget);
+
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta);
