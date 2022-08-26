@@ -8,6 +8,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class UAudioComponent;
 
 UCLASS()
 class STUDY_API AMyMagicProjectile : public AActor
@@ -22,12 +23,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+		UParticleSystem* ImpactVFX;
+
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	USphereComponent* SphereComp;
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UProjectileMovementComponent* MovementComp;
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UParticleSystemComponent* EffectComp;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
+	//UAudioComponent* AudioComp;
 
 	UPROPERTY(EditAnywhere,Category="Attack")
 	float DamageValue;

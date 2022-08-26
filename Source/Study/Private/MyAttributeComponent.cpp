@@ -30,6 +30,11 @@ float UMyAttributeComponent::GetMaxHealth() const
 	return this->HealthMax;
 }
 
+float UMyAttributeComponent::GetCurrentHealth() const
+{
+	return this->Health;
+}
+
 bool UMyAttributeComponent::ApplyHealthChange(float Delta)
 {
 	/*this->Health += Delta;

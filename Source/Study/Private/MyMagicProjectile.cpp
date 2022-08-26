@@ -5,7 +5,10 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
 #include "MyAttributeComponent.h"
+#include "Kismet/Gameplaystatics.h"
+#include "AI/MyAICharacter.h"
 
 // Sets default values
 AMyMagicProjectile::AMyMagicProjectile()
@@ -27,7 +30,16 @@ AMyMagicProjectile::AMyMagicProjectile()
 
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMyMagicProjectile::OnActorOverlap);
 
-	this->DamageValue = 50;
+	this->DamageValue = -50;
+
+
+	/*AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(RootComponent);
+	if (ensure(AudioComp))
+	{
+		AudioComp->Play();
+	}*/
+
 }
 
 // Called when the game starts or when spawned
@@ -44,11 +56,28 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 	{
 		UMyAttributeComponent* AttributeComp = Cast<UMyAttributeComponent>( OtherActor->GetComponentByClass(UMyAttributeComponent::StaticClass()));
 
+		
+
+
 		if (AttributeComp)
 		{
+
 			AttributeComp->ApplyHealthChange(DamageValue);
-			
-			this->Destroy();
+
+			if (ensure(!IsPendingKill()))
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+
+				Destroy();
+			}
+
+
+			/*AMyAICharacter* MyAI = Cast<AMyAICharacter>(OtherActor);
+			if (MyAI)
+			{
+				float tempF = AttributeComp->GetCurrentHealth();
+				UE_LOG(LogTemp, Log, TEXT("have attacked The actor, and the least health is: %f"),tempF);
+			}*/
 		}
 	}
 
