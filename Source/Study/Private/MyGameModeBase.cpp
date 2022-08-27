@@ -8,6 +8,11 @@
 #include "AI/MyAICharacter.h"
 #include "MyAttributeComponent.h"
 #include "EngineUtils.h"
+#include "MyCharacter.h"
+
+
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
+
 
 AMyGameModeBase::AMyGameModeBase()
 {
@@ -45,6 +50,11 @@ void AMyGameModeBase::KillAll()
 
 void AMyGameModeBase::SpawnBotTimeElapsed()
 {
+
+	if (!CVarSpawnBots.GetValueOnGameThread())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("bot spawning disabled via cvar 'cvarSpawnBots'."));
+	}
 
 	int32 NrOfAliveBots = 0;
 	for (TActorIterator<AMyAICharacter> It(GetWorld()); It; ++It)
@@ -91,3 +101,31 @@ void AMyGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryI
 	}
 }
 
+void AMyGameModeBase::RespawnPlayerElapsed(AController* Controller)
+{
+
+	if (ensure(Controller))
+	{
+		Controller->UnPossess();
+
+		RestartPlayer(Controller);
+	}
+}
+
+
+
+void AMyGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
+{
+	AMyCharacter* Player = Cast<AMyCharacter>(VictimActor);
+	if (Player)
+	{
+		FTimerHandle TimerHandle_RespawnDelay;
+
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+
+		float RespawnDelay = 2.0f;
+
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+	}
+}

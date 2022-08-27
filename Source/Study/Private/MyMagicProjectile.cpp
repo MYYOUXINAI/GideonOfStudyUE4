@@ -9,6 +9,7 @@
 #include "MyAttributeComponent.h"
 #include "Kismet/Gameplaystatics.h"
 #include "AI/MyAICharacter.h"
+#include "MyGamePlayFunctionLibrary.h"
 
 // Sets default values
 AMyMagicProjectile::AMyMagicProjectile()
@@ -54,30 +55,27 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 {
 	if (OtherActor && OtherActor!=GetInstigator())
 	{
-		UMyAttributeComponent* AttributeComp = Cast<UMyAttributeComponent>( OtherActor->GetComponentByClass(UMyAttributeComponent::StaticClass()));
+		//UMyAttributeComponent* AttributeComp = Cast<UMyAttributeComponent>( OtherActor->GetComponentByClass(UMyAttributeComponent::StaticClass()));
 
-		
+		//if (AttributeComp)
+		//{
+		//	AttributeComp->ApplyHealthChange(GetInstigator(), DamageValue);
 
+		//	if (ensure(!IsPendingKill()))
+		//	{
+		//		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 
-		if (AttributeComp)
+		//		Destroy();
+		//	}
+		//}
+
+		if (UMyGamePlayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageValue, SweepResult))
 		{
-
-			AttributeComp->ApplyHealthChange(GetInstigator(), DamageValue);
-
 			if (ensure(!IsPendingKill()))
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
-
 				Destroy();
 			}
-
-
-			/*AMyAICharacter* MyAI = Cast<AMyAICharacter>(OtherActor);
-			if (MyAI)
-			{
-				float tempF = AttributeComp->GetCurrentHealth();
-				UE_LOG(LogTemp, Log, TEXT("have attacked The actor, and the least health is: %f"),tempF);
-			}*/
 		}
 	}
 

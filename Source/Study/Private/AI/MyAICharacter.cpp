@@ -10,6 +10,8 @@
 #include "DrawDebugHelpers.h"
 #include "MyWorldUserWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AMyAICharacter::AMyAICharacter()
@@ -19,6 +21,9 @@ AMyAICharacter::AMyAICharacter()
 	AttributeComp = CreateDefaultSubobject<UMyAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";
 }
@@ -33,16 +38,6 @@ void AMyAICharacter::PostInitializeComponents()
 
 void AMyAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	//AAIController* AIC = Cast<AAIController>(GetController());
-
-	//if (AIC)
-	//{
-	//	UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
-
-	//	BBComp->SetValueAsObject("TargetActor", Pawn);
-	//	BBComp->SetValueAsVector("MoveToLocation", Pawn->GetActorLocation());
-	//	//DrawDebugString(GetWorld(), GetActorLocation(), "Player Spotted", nullptr, FColor::White, 4.0f, true);
-	//}
 
 	this->SetTargetActor(Pawn);
 }
@@ -99,6 +94,9 @@ void AMyAICharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeCompon
 			//Set Liftspan
 
 			SetLifeSpan(10.0f);
+
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCharacterMovement()->DisableMovement();
 
 		}
 	}

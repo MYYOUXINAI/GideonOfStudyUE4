@@ -2,7 +2,10 @@
 
 
 #include "MyAttributeComponent.h"
+#include "MyGameModeBase.h"
 
+
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.damageMultiplier"), 1.0f, TEXT("Global damage modifier for attribute component."), ECVF_Cheat);
 
 
 // Sets default values for this component's properties
@@ -44,15 +47,16 @@ float UMyAttributeComponent::GetCurrentHealth() const
 
 bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	/*this->Health += Delta;
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
-
-	return true;*/
-
-	if (!GetOwner()->CanBeDamaged())
+	if (!GetOwner()->CanBeDamaged() && Delta < 0.0f)
 	{
 		return false;
+	}
+
+	if (Delta < 0.0f)
+	{
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+		Delta *= DamageMultiplier;
 	}
 
 
@@ -63,6 +67,17 @@ bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	float ActualDelta = Health - OldHealth;
 
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+
+	if (Health == 0.0f && ActualDelta < 0.0f)
+	{
+		AMyGameModeBase* GM = GetWorld()->GetAuthGameMode<AMyGameModeBase>();
+
+		if (GM)
+		{
+			GM->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+	}
 
 	return ActualDelta != 0;
 }
