@@ -8,6 +8,8 @@
 #include "MyAttributeComponent.h"
 #include "BrainComponent.h"
 #include "DrawDebugHelpers.h"
+#include "MyWorldUserWidget.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 AMyAICharacter::AMyAICharacter()
@@ -68,6 +70,16 @@ void AMyAICharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeCompon
 
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
+		if (ActiveHealthBar == nullptr)
+		{
+			ActiveHealthBar = CreateWidget<UMyWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			
+			if (ActiveHealthBar)
+			{
+				ActiveHealthBar->AttachActor = this;
+				ActiveHealthBar->AddToViewport();
+			}
+		}
 
 		if (NewHealth <= 0.0f)
 		{

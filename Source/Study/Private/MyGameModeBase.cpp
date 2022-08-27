@@ -26,6 +26,23 @@ void AMyGameModeBase::StartPlay()
 
 
 }
+
+void AMyGameModeBase::KillAll()
+{
+
+	for (TActorIterator<AMyAICharacter> It(GetWorld()); It; ++It)
+	{
+		AMyAICharacter* Bot = *It;
+
+		UMyAttributeComponent* AttributeComp = Cast<UMyAttributeComponent>(Bot->GetComponentByClass(UMyAttributeComponent::StaticClass()));
+
+		if (AttributeComp && AttributeComp->IsAlive())
+		{
+			AttributeComp->Kill(this);//@fixme: pass player as a instigator; for kill credits
+		}
+	}
+}
+
 void AMyGameModeBase::SpawnBotTimeElapsed()
 {
 

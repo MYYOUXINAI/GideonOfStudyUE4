@@ -17,6 +17,11 @@ UMyAttributeComponent::UMyAttributeComponent()
 
 
 
+bool UMyAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
+}
+
 bool UMyAttributeComponent::IsAlive()const
 {
 	return this->Health > 0;
@@ -44,6 +49,12 @@ bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 
 	return true;*/
+
+	if (!GetOwner()->CanBeDamaged())
+	{
+		return false;
+	}
+
 
 	float OldHealth = this->Health;
 

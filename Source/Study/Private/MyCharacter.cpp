@@ -83,6 +83,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("MyPrimaryInteraction", IE_Pressed, this, &AMyCharacter::MyPrimaryInteraction);
 }
 
+
+
 //控制角色向前移动
 void AMyCharacter::MyMoveForward(float Value)
 {
@@ -207,3 +209,11 @@ void AMyCharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponen
 
 
 
+
+void AMyCharacter::HealSelf(float Amount)
+{
+	if (AttributeComp)
+	{
+		AttributeComp->ApplyHealthChange(this, Amount);
+	}
+}
