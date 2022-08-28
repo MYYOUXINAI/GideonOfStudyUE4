@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MyInteractionComponent.h"
 #include "MyAttributeComponent.h"
+#include "MyActionComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -29,6 +30,8 @@ AMyCharacter::AMyCharacter()
 	InteractionComp = CreateDefaultSubobject<UMyInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<UMyAttributeComponent>("AttributeComp");
+
+	ActionComp = CreateDefaultSubobject<UMyActionComponent>("ActionComp");
 
 	TimeToHitParamName = "TimeToHit";
 	
@@ -72,6 +75,10 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAxis("MyTurnRight", this, &AMyCharacter::MyTurnRight);
 
+	PlayerInputComponent->BindAction("MySprint", IE_Pressed, this, &AMyCharacter::SprintStart);
+
+	PlayerInputComponent->BindAction("MySprint", IE_Released, this, &AMyCharacter::SprintStop);
+
 	PlayerInputComponent->BindAxis("MyTurn", this, &APawn::AddControllerYawInput);
 
 	PlayerInputComponent->BindAxis("MyLookUp", this, &APawn::AddControllerPitchInput);
@@ -110,11 +117,24 @@ void AMyCharacter::MyTurnRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
+void AMyCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void AMyCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
 void AMyCharacter::MyPrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
+	/*PlayAnimMontage(AttackAnim);
 	
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AMyCharacter::PrimaryAttack_TimeElapsed, AnimateDelay);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AMyCharacter::PrimaryAttack_TimeElapsed, AnimateDelay);*/
+
+	ActionComp->StartActionByName(this, "MyPrimaryAttack");
+	
 }
 
 void AMyCharacter::PrimaryAttack_TimeElapsed()

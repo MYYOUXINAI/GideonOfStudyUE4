@@ -12,6 +12,7 @@ class UCameraComponent;
 class UMyInteractionComponent;
 class UAnimMontage;
 class UMyAttributeComponent;
+class UMyActionComponent;
 
 UCLASS()
 class STUDY_API AMyCharacter : public ACharacter
@@ -60,6 +61,10 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Component")
 	UMyAttributeComponent* AttributeComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ActionComponent")
+	UMyActionComponent* ActionComp;
+
+
 	FTimerHandle TimerHandle_PrimaryAttack;
 	FTimerHandle TimerHandle_Dash;
 	FTimerHandle TimerHandle_BlackHoleAttack;
@@ -67,6 +72,9 @@ protected:
 	void MyMoveForward(float Value);
 
 	void MyTurnRight(float Value);
+
+	void SprintStart();
+	void SprintStop();
 
 	void MyPrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
