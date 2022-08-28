@@ -10,6 +10,7 @@ class UPawnSensingComponent;
 class UMyAttributeComponent;
 class UUserWidget;
 class UMyWorldUserWidget;
+class UMyActionComponent;
 
 UCLASS()
 class STUDY_API AMyAICharacter : public ACharacter
@@ -37,6 +38,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	UMyAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	UMyActionComponent* ActionComp;
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "gameplayTagContainer.h"
 #include "MyActionComponent.generated.h"
 
 class UMyAction;
@@ -15,12 +16,15 @@ class STUDY_API UMyActionComponent : public UActorComponent
 
 public:	
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
+	FGameplayTagContainer ActiveGameplayTags;
+
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void AddAction(TSubclassOf<UMyAction> ActionClass);
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		bool StartActionByName(AActor* InstigatorActor, FName ActionName);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		bool StopActionByName(AActor* InstigatorActor, FName ActionName);
 
@@ -30,6 +34,9 @@ protected:
 
 	UPROPERTY()
 	TArray<UMyAction*>Actions;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Actions")
+	TArray<TSubclassOf<UMyAction>> DefaultsActions;
 
 	virtual void BeginPlay() override;
 

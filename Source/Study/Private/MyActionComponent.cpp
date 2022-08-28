@@ -18,7 +18,10 @@ void UMyActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	for (TSubclassOf<UMyAction> ActionClass : DefaultsActions)
+	{
+		AddAction(ActionClass);
+	}
 }
 
 void UMyActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -47,6 +50,8 @@ bool UMyActionComponent::StartActionByName(AActor* InstigatorActor, FName Action
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
+			if (!Action->CanStart(InstigatorActor))	continue;
+
 			Action->StartAction(InstigatorActor);
 			return true;
 		}
@@ -60,8 +65,11 @@ bool UMyActionComponent::StopActionByName(AActor* InstigatorActor, FName ActionN
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
-			Action->StopAction(InstigatorActor);
-			return true;
+			if (Action->isRunning())
+			{
+				Action->StopAction(InstigatorActor);
+				return true;
+			}
 		}
 	}
 	return false;

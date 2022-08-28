@@ -10,6 +10,7 @@
 #include "Kismet/Gameplaystatics.h"
 #include "AI/MyAICharacter.h"
 #include "MyGamePlayFunctionLibrary.h"
+#include "MyActionComponent.h"
 
 // Sets default values
 AMyMagicProjectile::AMyMagicProjectile()
@@ -55,19 +56,14 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 {
 	if (OtherActor && OtherActor!=GetInstigator())
 	{
-		//UMyAttributeComponent* AttributeComp = Cast<UMyAttributeComponent>( OtherActor->GetComponentByClass(UMyAttributeComponent::StaticClass()));
+		UMyActionComponent* Comp = Cast<UMyActionComponent>(OtherActor->GetComponentByClass(UMyActionComponent::StaticClass()));
+		if (Comp && Comp->ActiveGameplayTags.HasTag(ParryTag))
+		{
+			MovementComp->Velocity = -MovementComp->Velocity;
 
-		//if (AttributeComp)
-		//{
-		//	AttributeComp->ApplyHealthChange(GetInstigator(), DamageValue);
-
-		//	if (ensure(!IsPendingKill()))
-		//	{
-		//		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
-
-		//		Destroy();
-		//	}
-		//}
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
 
 		if (UMyGamePlayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageValue, SweepResult))
 		{

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "MyMagicProjectile.generated.h"
 
 class USphereComponent;
@@ -36,8 +37,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
 	UAudioComponent* AudioComp;
 
-	UPROPERTY(EditAnywhere,Category="Attack")
+	UPROPERTY(EditAnywhere,Category="Damage")
 	float DamageValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag ParryTag;
 
 	UFUNCTION(BlueprintCallable)
 	void OnActorOverlap(UPrimitiveComponent*  OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
