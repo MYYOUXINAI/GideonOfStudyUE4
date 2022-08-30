@@ -2,6 +2,7 @@
 
 
 #include "MyPowerUp_HealthPotion.h"
+#include "MyPlayerState.h"
 #include "MyAttributeComponent.h"
 
 AMyPowerUp_HealthPotion::AMyPowerUp_HealthPotion()
@@ -10,6 +11,8 @@ AMyPowerUp_HealthPotion::AMyPowerUp_HealthPotion()
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	MeshComp->SetupAttachment(RootComponent);
+
+	CreditsAmount = 80;
 }
 
 void AMyPowerUp_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
@@ -24,9 +27,12 @@ void AMyPowerUp_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 
 	if (ensure(AttributeComp) && !AttributeComp->IsFullHealth())
 	{
-		if (AttributeComp->ApplyHealthChange(this,AttributeComp->GetMaxHealth()))
+		if (AMyPlayerState* PS=InstigatorPawn->GetPlayerState<AMyPlayerState>())
 		{
-			this->HideAndCoolPowerup();
+			if (PS->RemoveCredits(CreditsAmount) && AttributeComp->ApplyHealthChange(this, AttributeComp->GetMaxHealth()))
+			{
+				this->HideAndCoolPowerup();
+			}
 		}
 	}
 	

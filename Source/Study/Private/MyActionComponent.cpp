@@ -20,7 +20,7 @@ void UMyActionComponent::BeginPlay()
 
 	for (TSubclassOf<UMyAction> ActionClass : DefaultsActions)
 	{
-		AddAction(ActionClass);
+		AddAction(GetOwner(), ActionClass);
 	}
 }
 
@@ -33,15 +33,30 @@ void UMyActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 
 
-void UMyActionComponent::AddAction(TSubclassOf<UMyAction> ActionClass)
+void UMyActionComponent::AddAction(AActor* InstigatorActor, TSubclassOf<UMyAction> ActionClass)
 {
 	UMyAction* NewAction = NewObject<UMyAction>(this, ActionClass);
 	if (ensure(NewAction))
 	{
 		Actions.Add(NewAction);
+
+		if (NewAction->bAutoStart && ensure(NewAction->CanStart(InstigatorActor)))
+		{
+			NewAction->StartAction(InstigatorActor);
+		}
 	}
 	return;
 
+}
+
+
+void UMyActionComponent::RemoveAction( UMyAction* RemoveToAction)
+{
+	if (!ensure(RemoveToAction && !RemoveToAction->isRunning()))
+	{
+		return;
+	}
+	Actions.Remove(RemoveToAction);
 }
 
 bool UMyActionComponent::StartActionByName(AActor* InstigatorActor, FName ActionName)

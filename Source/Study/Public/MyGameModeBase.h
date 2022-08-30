@@ -21,9 +21,17 @@ class STUDY_API AMyGameModeBase : public AGameModeBase
 
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
+		int32 CreditsPerKill;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
+		int32 DesiredPowerupCount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
+		int32 RequiredPowerupDistance;
+
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
-
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UEnvQuery* SpawnBotQuery;

@@ -11,6 +11,7 @@
 #include "AI/MyAICharacter.h"
 #include "MyGamePlayFunctionLibrary.h"
 #include "MyActionComponent.h"
+#include "MyActionEffect.h"
 
 // Sets default values
 AMyMagicProjectile::AMyMagicProjectile()
@@ -56,8 +57,8 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 {
 	if (OtherActor && OtherActor!=GetInstigator())
 	{
-		UMyActionComponent* Comp = Cast<UMyActionComponent>(OtherActor->GetComponentByClass(UMyActionComponent::StaticClass()));
-		if (Comp && Comp->ActiveGameplayTags.HasTag(ParryTag))
+		UMyActionComponent* ActionComp = Cast<UMyActionComponent>(OtherActor->GetComponentByClass(UMyActionComponent::StaticClass()));
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
 		{
 			MovementComp->Velocity = -MovementComp->Velocity;
 
@@ -71,6 +72,11 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 				Destroy();
+
+				if (ActionComp)
+				{
+					ActionComp->AddAction(GetInstigator(), BurningEffectClass);
+				}
 			}
 		}
 	}

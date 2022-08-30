@@ -3,16 +3,17 @@
 
 #include "MyInteractionComponent.h"
 #include "MyInterface.h"
+#include "MyWorldUserWidget.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 UMyInteractionComponent::UMyInteractionComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	TraceDistance = 500.f;
+	TraceRadius = 30.0f;
+	CollisionChannel = ECC_WorldDynamic;
 }
 
 
@@ -22,24 +23,22 @@ UMyInteractionComponent::UMyInteractionComponent()
 void UMyInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
+
+
 
 
 // Called every frame
 void UMyInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	this->FindBestInstractable();
 }
 
-void UMyInteractionComponent::PrimaryInteract()
+void UMyInteractionComponent::FindBestInstractable()
 {
 	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(CollisionChannel);
 
 	FVector Start, End;
 	FVector EyeLocation;
@@ -49,39 +48,70 @@ void UMyInteractionComponent::PrimaryInteract()
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 	Start = EyeLocation;
-	End = EyeLocation + 1000 * EyeRotation.Vector();
-
+	End = EyeLocation + TraceDistance * EyeRotation.Vector();
 
 	TArray<FHitResult>Hits;
-	float Radius = 30.0f;
+	float Radius = TraceRadius;
 
 	FCollisionShape Shape;
 	Shape.SetSphere(Radius);
 
-
-
-	bool RightHit = GetWorld()->SweepMultiByObjectType(Hits, Start, End,FQuat::Identity, ObjectQueryParams,Shape);
-
+	bool RightHit = GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, ObjectQueryParams, Shape);
 	FColor ResColor = RightHit ? FColor::Green : FColor::Red;
 
-	for (FHitResult Hit : Hits)
+	FocusActor = nullptr;
+
+	for (FHitResult& Hit : Hits)
 	{
 		AActor* HitActor = Hit.GetActor();
-
 		if (HitActor)
 		{
 			if (HitActor->Implements<UMyInterface>())
 			{
-				APawn* MyApawn = Cast<APawn>(MyOwner);
-
-				IMyInterface::Execute_Interact(HitActor, MyApawn);
+				FocusActor = HitActor;
 
 				//DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, ResColor, false, 2.0f);
-
 				break;
 			}
 		}
 	}
 
+	if (FocusActor)
+	{
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance = CreateWidget<UMyWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+		}
+
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->AttachActor = FocusActor;
+			if (!DefaultWidgetInstance->IsInViewport())
+			{
+				DefaultWidgetInstance->AddToViewport();
+			}
+		}
+	}
+	else
+	{
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->RemoveFromParent();
+		}
+	}
+
 	//DrawDebugLine(GetWorld(), EyeLocation, End, ResColor, false, 2.0f, 0, 2.0f);
+}
+
+
+void UMyInteractionComponent::PrimaryInteract()
+{
+	if (FocusActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focus Actor to Interact!");
+		return;
+	}
+
+	APawn* MyApawn = Cast<APawn>(GetOwner());
+	IMyInterface::Execute_Interact(FocusActor, MyApawn);
 }

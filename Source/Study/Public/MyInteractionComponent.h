@@ -7,20 +7,44 @@
 #include "MyInteractionComponent.generated.h"
 
 
+class UMyWorldUserWidget;
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STUDY_API UMyInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UMyInteractionComponent();
 
 	void PrimaryInteract();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	void FindBestInstractable();
+
+	UPROPERTY()
+		AActor* FocusActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+		TSubclassOf<UMyWorldUserWidget> DefaultWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+		float TraceDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+		float TraceRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+		TEnumAsByte<ECollisionChannel> CollisionChannel;
+
+
+
+	UPROPERTY()
+		UMyWorldUserWidget* DefaultWidgetInstance;
+
 
 public:	
 	// Called every frame
