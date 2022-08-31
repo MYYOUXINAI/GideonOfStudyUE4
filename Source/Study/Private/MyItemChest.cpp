@@ -3,6 +3,7 @@
 
 #include "MyItemChest.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h" 
 
 
 
@@ -19,6 +20,8 @@ AMyItemChest::AMyItemChest()
 	LidMesh->SetupAttachment(BaseMesh);
 
 	MyRotator = 110.0f;
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -38,5 +41,21 @@ void AMyItemChest::Tick(float DeltaTime)
 
 void AMyItemChest::Interact_Implementation(APawn* IntigatorPawn)
 {
-	LidMesh->SetRelativeRotation(FRotator(MyRotator, 0.0f, 0.0f));
+	bLidOpened = !bLidOpened;
+
+	OnRep_LidOpened();
+}
+
+void AMyItemChest::OnRep_LidOpened()
+{
+	float CurrPitch = bLidOpened ? MyRotator : 0.0f;
+
+	LidMesh->SetRelativeRotation(FRotator(CurrPitch, 0.0f, 0.0f));
+}
+
+void AMyItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMyItemChest, bLidOpened);
 }

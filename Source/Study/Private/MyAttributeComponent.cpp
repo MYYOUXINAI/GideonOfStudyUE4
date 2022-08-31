@@ -3,6 +3,7 @@
 
 #include "MyAttributeComponent.h"
 #include "MyGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.damageMultiplier"), 1.0f, TEXT("Global damage modifier for attribute component."), ECVF_Cheat);
@@ -11,13 +12,14 @@ static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.damageMultiplie
 // Sets default values for this component's properties
 UMyAttributeComponent::UMyAttributeComponent()
 {
-	this->Health = 200.0f;
+	this->HealthMax = 200.0f;
+	this->Health = this->HealthMax;
+
+	this->RageMax = 100.f;
+	this->Rage = 0.f;
+
+	SetIsReplicatedByDefault(true);
 }
-
-
-
-
-
 
 
 bool UMyAttributeComponent::Kill(AActor* InstigatorActor)
@@ -66,8 +68,12 @@ bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 
 	float ActualDelta = Health - OldHealth;
 
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
+	if (ActualDelta != 0.0f) 
+	{
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+	}
 
 	if (Health == 0.0f && ActualDelta < 0.0f)
 	{
@@ -80,6 +86,24 @@ bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	}
 
 	return ActualDelta != 0;
+}
+
+float UMyAttributeComponent::GetRage() const
+{
+	return this->Rage;
+}
+
+bool UMyAttributeComponent::ApplyRage(AActor* Instigator, float Delta)
+{
+	float OldRage = this->Rage;
+	Rage = FMath::Clamp(Rage + Delta, 0.0f, this->RageMax);
+
+	float CurrentDelta = Rage - OldRage;
+	if (CurrentDelta != 0)
+	{
+		OnRageChanged.Broadcast(Instigator, this, this->Rage, CurrentDelta);
+	}
+	return CurrentDelta != 0;
 }
 
 UMyAttributeComponent* UMyAttributeComponent::GetAttributes(AActor* FromActor)
@@ -102,4 +126,22 @@ bool UMyAttributeComponent::IsActorAlive(AActor* FromActor)
 	}
 
 	return false;
+}
+
+void UMyAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMyAttributeComponent, Health);
+	DOREPLIFETIME(UMyAttributeComponent, HealthMax);
+
+	//DOREPLIFETIME_CONDITION(UMyAttributeComponent, HealthMax, COND_InitialOnly);//to save resource
+}
+
+
+void UMyAttributeComponent::MulticastHealthChanged_Implementation(AActor* Instigator, float NewHealth, float Delta)
+{
+
+	OnHealthChanged.Broadcast(Instigator, this, NewHealth, Delta);
+	ApplyRage(Instigator, -Delta);
 }

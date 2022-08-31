@@ -10,9 +10,8 @@ UMyActionComponent::UMyActionComponent()
 
 	PrimaryComponentTick.bCanEverTick = true;
 
-
+	SetIsReplicatedByDefault(true);
 }
-
 
 void UMyActionComponent::BeginPlay()
 {
@@ -67,6 +66,11 @@ bool UMyActionComponent::StartActionByName(AActor* InstigatorActor, FName Action
 		{
 			if (!Action->CanStart(InstigatorActor))	continue;
 
+			if (!GetOwner()->HasAuthority())
+			{
+				ServerStartAction(InstigatorActor, ActionName);
+			}
+
 			Action->StartAction(InstigatorActor);
 			return true;
 		}
@@ -88,4 +92,10 @@ bool UMyActionComponent::StopActionByName(AActor* InstigatorActor, FName ActionN
 		}
 	}
 	return false;
+}
+
+
+void UMyActionComponent::ServerStartAction_Implementation(AActor* InstigatorActor, FName ActionName)
+{
+	StartActionByName(InstigatorActor, ActionName);
 }

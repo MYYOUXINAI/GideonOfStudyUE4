@@ -43,6 +43,8 @@ AMyMagicProjectile::AMyMagicProjectile()
 		AudioComp->Play();
 	}
 
+	SetReplicates(true);
+
 }
 
 // Called when the game starts or when spawned

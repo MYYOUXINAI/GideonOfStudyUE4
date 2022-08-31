@@ -9,6 +9,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, UMyAttributeComponent*, OwningComp, float, NewHealth, float, Delta);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChanged, AActor*, InstigatorActor, UMyAttributeComponent*, OwningComp, float, NewValue, float, Delta);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STUDY_API UMyAttributeComponent : public UActorComponent
 {
@@ -28,14 +30,21 @@ public:
 protected:
 	// Called when the game starts
 	
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Attributes")
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Replicated,Category="Attributes")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Replicated, Category = "Attributes")
 	float HealthMax;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+		float Rage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+		float RageMax;
 
+	UFUNCTION(NetMulticast, reliable)
+	void MulticastHealthChanged(AActor* Instigator, float NewHealth, float Delat);
+	void MulticastHealthChanged_Implementation(AActor* Instigator, float NewHealth, float Delta);
 
 public:	
 
@@ -58,6 +67,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChanged OnRageChanged;
+
 	UFUNCTION(BlueprintCallable,Category="Attributes")
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+		float GetRage()const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+		bool ApplyRage(AActor* Instigator, float Delta);
 };

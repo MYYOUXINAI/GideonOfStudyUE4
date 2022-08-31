@@ -36,6 +36,10 @@ public:
 
 protected:
 
+	UFUNCTION(Server, Reliable)
+		void ServerStartAction(AActor* InstigatorActor, FName ActionName);
+	virtual void ServerStartAction_Implementation(AActor* InstigatorActor, FName ActionName);
+
 	UPROPERTY()
 	TArray<UMyAction*>Actions;
 

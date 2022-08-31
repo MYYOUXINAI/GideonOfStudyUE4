@@ -27,9 +27,9 @@ protected:
 
 public:
 
-	/*UPROPERTY(EditAnywhere, Category = "MyUI")
-		FVector WorldOffset;*/
+	UPROPERTY(EditAnywhere, Category = "MyUI")
+	FVector WorldOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "MyUI")
+	UPROPERTY(BlueprintReadOnly, Category = "MyUI",meta=(ExposeOnSpawn=true))
 	AActor* AttachActor;
 };

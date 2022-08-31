@@ -28,8 +28,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget>HealthBarWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget>SpottedWidgetClass;
+
 	UPROPERTY(VisibleAnywhere,Category="Effect")
 	FName TimeToHitParamName;
+
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName TargetActorKey;
 
 	virtual void PostInitializeComponents()override;
 
@@ -48,6 +54,8 @@ protected:
 	UFUNCTION()
 	void SetTargetActor(AActor* NewTarget);
 
+	UFUNCTION()
+		AActor* GetTargetActor()const;
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta);

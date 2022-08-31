@@ -19,6 +19,7 @@ UMyInteractionComponent::UMyInteractionComponent()
 
 
 
+
 // Called when the game starts
 void UMyInteractionComponent::BeginPlay()
 {
@@ -32,7 +33,12 @@ void UMyInteractionComponent::BeginPlay()
 void UMyInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	this->FindBestInstractable();
+
+	APawn* MyPawn = Cast<APawn>(GetOwner());
+	if (MyPawn->IsLocallyControlled())
+	{
+		this->FindBestInstractable();
+	}
 }
 
 void UMyInteractionComponent::FindBestInstractable()
@@ -106,12 +112,17 @@ void UMyInteractionComponent::FindBestInstractable()
 
 void UMyInteractionComponent::PrimaryInteract()
 {
-	if (FocusActor == nullptr)
+	ServerInterface(FocusActor);
+}
+
+void UMyInteractionComponent::ServerInterface_Implementation(AActor* InFocus)
+{
+	if (InFocus == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focus Actor to Interact!");
 		return;
 	}
 
 	APawn* MyApawn = Cast<APawn>(GetOwner());
-	IMyInterface::Execute_Interact(FocusActor, MyApawn);
+	IMyInterface::Execute_Interact(InFocus, MyApawn);
 }

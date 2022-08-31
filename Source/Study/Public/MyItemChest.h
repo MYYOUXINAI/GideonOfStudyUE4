@@ -21,7 +21,12 @@ public:
 	AMyItemChest();
 
 protected:
-	// Called when the game starts or when spawned
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+	bool bLidOpened;
+
+	UFUNCTION()
+	void OnRep_LidOpened();
+
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)

@@ -30,7 +30,7 @@ AMyProjectileBase::AMyProjectileBase()
 	MoveComp->ProjectileGravityScale = 0.0f;
 	MoveComp->InitialSpeed = 8000.f;
 
-
+	SetReplicates(true);
 }
 
 void AMyProjectileBase::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

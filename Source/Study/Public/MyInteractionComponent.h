@@ -21,6 +21,10 @@ public:
 	void PrimaryInteract();
 
 protected:
+	UFUNCTION(Server, Reliable)
+		void ServerInterface(AActor* InFocus);
+	virtual void ServerInterface_Implementation(AActor* InFocus);
+
 	virtual void BeginPlay() override;
 
 	void FindBestInstractable();

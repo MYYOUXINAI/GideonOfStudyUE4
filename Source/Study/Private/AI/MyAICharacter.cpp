@@ -29,6 +29,7 @@ AMyAICharacter::AMyAICharacter()
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";
+	TargetActorKey = "TargetActor";
 }
 
 void AMyAICharacter::PostInitializeComponents()
@@ -39,20 +40,42 @@ void AMyAICharacter::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this, &AMyAICharacter::OnHealthChanged);
 }
 
-void AMyAICharacter::OnPawnSeen(APawn* Pawn)
-{
-
-	this->SetTargetActor(Pawn);
-}
-
 void AMyAICharacter::SetTargetActor(AActor* NewTarget)
 {
 	AAIController* AIC = Cast<AAIController>(GetController());
 
 	if (AIC)
 	{
-		AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
+		AIC->GetBlackboardComponent()->SetValueAsObject(TargetActorKey, NewTarget);
 	}
+}
+
+AActor* AMyAICharacter::GetTargetActor() const
+{
+	AAIController* AIC = Cast<AAIController>(GetController());
+
+	if (AIC)
+	{
+		return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
+	}
+	return nullptr;
+}
+
+
+void AMyAICharacter::OnPawnSeen(APawn* Pawn)
+{
+	if (Pawn != GetTargetActor())
+	{
+		SetTargetActor(Pawn);
+
+		UMyWorldUserWidget* NewWidget = CreateWidget<UMyWorldUserWidget>(GetWorld(), SpottedWidgetClass);
+		if (NewWidget)
+		{
+			NewWidget->AttachActor = this;
+			NewWidget->AddToViewport(10);
+		}
+	}
+
 }
 
 void AMyAICharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta)

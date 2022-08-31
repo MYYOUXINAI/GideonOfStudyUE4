@@ -21,7 +21,7 @@ void UMyWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	}
 
 	FVector2D ScreenPosition;
-	if (UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), AttachActor->GetActorLocation()/*, WorldOffset*/, ScreenPosition))
+	if (UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), AttachActor->GetActorLocation()+ WorldOffset, ScreenPosition))
 	{
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(this);
 		ScreenPosition /= Scale;
