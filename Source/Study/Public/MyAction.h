@@ -7,6 +7,21 @@
 #include "gameplayTagContainer.h"
 #include "MyAction.generated.h"
 
+
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY();
+public:
+
+	UPROPERTY()
+		bool bisRunning;
+
+	UPROPERTY()
+		AActor* InstigatorActor;
+};
+
+
 /**
  * 
  */
@@ -22,6 +37,9 @@ class STUDY_API UMyAction : public UObject
 
 protected:
 
+	UPROPERTY(Replicated)
+		UMyActionComponent* ActionComp;
+
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		UMyActionComponent* GetOwningComponent()const;
 
@@ -31,9 +49,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 		FGameplayTagContainer BlockedTags;
 
-	bool bisRunning;
+
+	UPROPERTY(ReplicatedUsing="OnRep_RepData")
+		FActionRepData RepData;
+
+	UFUNCTION()
+	void OnRep_RepData();
 
 public:
+
+	void Initialize(UMyActionComponent* NewActionComp);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 		bool bAutoStart;
@@ -59,4 +84,6 @@ public:
 
 	virtual UWorld* GetWorld()const override;
 
+
+	 bool IsSupportedForNetworking()const override;
 };

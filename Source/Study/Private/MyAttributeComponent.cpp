@@ -49,7 +49,6 @@ float UMyAttributeComponent::GetCurrentHealth() const
 
 bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-
 	if (!GetOwner()->CanBeDamaged() && Delta < 0.0f)
 	{
 		return false;
@@ -63,27 +62,29 @@ bool UMyAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 
 
 	float OldHealth = this->Health;
+	float ActualHealth = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
-	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
+	float ActualDelta = ActualHealth - OldHealth;
 
-	float ActualDelta = Health - OldHealth;
-
-	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-
-	if (ActualDelta != 0.0f) 
+	if (GetOwner()->HasAuthority())
 	{
-		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
-	}
-
-	if (Health == 0.0f && ActualDelta < 0.0f)
-	{
-		AMyGameModeBase* GM = GetWorld()->GetAuthGameMode<AMyGameModeBase>();
-
-		if (GM)
+		Health = ActualHealth;
+		if (ActualDelta != 0.0f)
 		{
-			GM->OnActorKilled(GetOwner(), InstigatorActor);
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+		}
+
+		if (Health == 0.0f && ActualDelta < 0.0f)
+		{
+			AMyGameModeBase* GM = GetWorld()->GetAuthGameMode<AMyGameModeBase>();
+
+			if (GM)
+			{
+				GM->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
+	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
 	return ActualDelta != 0;
 }

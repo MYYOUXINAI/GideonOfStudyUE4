@@ -75,7 +75,7 @@ void AMyMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 				UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 				Destroy();
 
-				if (ActionComp)
+				if (ActionComp && HasAuthority())
 				{
 					ActionComp->AddAction(GetInstigator(), BurningEffectClass);
 				}

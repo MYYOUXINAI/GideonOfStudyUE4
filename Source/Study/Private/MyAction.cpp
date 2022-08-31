@@ -5,11 +5,15 @@
 #include "MyAttributeComponent.h"
 #include "MyActionComponent.h"
 #include "GameplayTagContainer.h"
+#include "Net/UnrealNetwork.h"
 
 
 
 
-
+void UMyAction::Initialize(UMyActionComponent* NewActionComp)
+{
+	ActionComp = NewActionComp;
+}
 
 bool UMyAction::CanStart_Implementation(AActor* InstigatorActor)
 {
@@ -31,37 +35,67 @@ void UMyAction::StartAction_Implementation(AActor* InstigatorActor)
 	UMyActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
 
-	bisRunning = true;
+	RepData.bisRunning = true;
+	RepData.InstigatorActor = InstigatorActor;
 }
 
 void UMyAction::StopAction_Implementation(AActor* InstigatorActor)
 {
 	UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
-	ensureAlways(bisRunning);
+	//ensureAlways(bisRunning);
 
 	UMyActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
-
-	bisRunning = false;
+	
+	RepData.bisRunning = false;
+	RepData.InstigatorActor = InstigatorActor;
 }
 
 UWorld* UMyAction::GetWorld() const
 {
-	UActorComponent* Comp = Cast<UActorComponent>(GetOuter());
-	if (Comp)
+	AActor* Actor = Cast<AActor>(GetOuter());
+	if (Actor)
 	{
-		return Comp->GetWorld();
+		return Actor->GetWorld();
 	}
 
 	return nullptr;
 }
 
+bool UMyAction::IsSupportedForNetworking() const
+{
+	return true;
+}
+
+
 UMyActionComponent* UMyAction::GetOwningComponent() const
 {
-	return Cast<UMyActionComponent>(GetOuter());
+	return ActionComp;
+	//return Cast<UMyActionComponent>(GetOuter());
 }
+
+void UMyAction::OnRep_RepData()
+{
+	if (RepData.bisRunning)
+	{
+		StartAction(RepData.InstigatorActor);
+	}
+	else
+	{
+		StopAction(RepData.InstigatorActor);
+	}
+}
+
 
 bool UMyAction::isRunning() const
 {
-	return bisRunning;
+	return RepData.bisRunning;
+}
+
+void UMyAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMyAction, RepData);
+	DOREPLIFETIME(UMyAction, ActionComp);
 }

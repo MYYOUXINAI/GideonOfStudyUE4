@@ -35,12 +35,16 @@ public:
 	UMyActionComponent();
 
 protected:
-
+	
 	UFUNCTION(Server, Reliable)
 		void ServerStartAction(AActor* InstigatorActor, FName ActionName);
 	virtual void ServerStartAction_Implementation(AActor* InstigatorActor, FName ActionName);
 
-	UPROPERTY()
+	UFUNCTION(Server, Reliable)
+		void ServerStopAction(AActor* InstigatorActor, FName ActionName);
+	virtual void ServerStopAction_Implementation(AActor* InstigatorActor, FName ActionName);
+
+	UPROPERTY(Replicated)
 	TArray<UMyAction*>Actions;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
@@ -51,5 +55,5 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags)override;
 };
