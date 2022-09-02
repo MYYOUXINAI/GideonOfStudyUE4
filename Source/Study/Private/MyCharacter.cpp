@@ -161,6 +161,8 @@ void AMyCharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponen
 	{
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		DisableInput(PC);
+		
+		SetLifeSpan(5.0f);
 	}
 }
 
