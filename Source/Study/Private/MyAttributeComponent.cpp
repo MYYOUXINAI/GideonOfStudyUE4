@@ -129,7 +129,6 @@ bool UMyAttributeComponent::IsActorAlive(AActor* FromActor)
 	return false;
 }
 
-
 void UMyAttributeComponent::MulticastHealthChanged_Implementation(AActor* Instigator, float NewHealth, float Delta)
 {
 

@@ -72,7 +72,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("MyTurnRight", this, &AMyCharacter::MyTurnRight);
 
 	PlayerInputComponent->BindAction("MySprint", IE_Pressed, this, &AMyCharacter::SprintStart);
-
+	
 	PlayerInputComponent->BindAction("MySprint", IE_Released, this, &AMyCharacter::SprintStop);
 
 	PlayerInputComponent->BindAxis("MyTurn", this, &APawn::AddControllerYawInput);

@@ -27,7 +27,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_LidOpened();
-
+	
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
