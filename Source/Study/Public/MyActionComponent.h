@@ -9,6 +9,9 @@
 
 class UMyAction;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, UMyActionComponent*, OwningComp, UMyAction*, Action);
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STUDY_API UMyActionComponent : public UActorComponent
 {
@@ -35,6 +38,8 @@ public:
 	UMyActionComponent();
 
 protected:
+
+	
 	
 	UFUNCTION(Server, Reliable)
 		void ServerStartAction(AActor* InstigatorActor, FName ActionName);
@@ -44,7 +49,7 @@ protected:
 		void ServerStopAction(AActor* InstigatorActor, FName ActionName);
 	virtual void ServerStopAction_Implementation(AActor* InstigatorActor, FName ActionName);
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<UMyAction*>Actions;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
@@ -52,7 +57,13 @@ protected:
 
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	UPROPERTY(BlueprintAssignable)
+		FOnActionStateChanged OnActionStarted;
+
+	UPROPERTY(BlueprintAssignable)
+		FOnActionStateChanged OnActionStopped;
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags)override;

@@ -38,6 +38,12 @@ class STUDY_API UMyAction : public UObject
 protected:
 
 	UPROPERTY(Replicated)
+	float TimeStarted;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+		UTexture2D* Icon;
+
+	UPROPERTY(Replicated)
 		UMyActionComponent* ActionComp;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
@@ -65,6 +71,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		bool isRunning()const;
+
+
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 		bool CanStart(AActor* InstigatorActor);

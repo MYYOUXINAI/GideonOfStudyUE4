@@ -18,6 +18,9 @@ public:
 
 	virtual void StopAction_Implementation(AActor* InstigatorActor)override;
 
+	UFUNCTION(BlueprintCallable, Category = "Action")
+		float GetTimeRemaining()const;
+
 	UMyActionEffect();
 
 protected:

@@ -3,6 +3,7 @@
 
 #include "MyActionEffect.h"
 #include "MyActionComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 UMyActionEffect::UMyActionEffect()
 {
@@ -50,7 +51,16 @@ void UMyActionEffect::StopAction_Implementation(AActor* InstigatorActor)
 	}
 }
 
-
+float UMyActionEffect::GetTimeRemaining() const
+{
+	AGameStateBase* GS = GetWorld()->GetGameState<AGameStateBase>();
+	if (GS)
+	{
+		const float TimeEnded = TimeStarted + Duration;
+		return TimeEnded - GS->GetServerWorldTimeSeconds();
+	}
+	return this->Duration;
+}
 
 void UMyActionEffect::ExecutePeriodEffect_Implementation(AActor* InstigatorActor)
 {
