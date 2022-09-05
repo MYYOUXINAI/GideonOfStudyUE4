@@ -51,6 +51,10 @@ protected:
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
 
+	UFUNCTION(NetMulticast, UnReliable)
+		void MulticastOnPawnSeen(APawn* Pawn);
+	virtual void MulticastOnPawnSeen_Implementation(APawn* Pawn);
+
 	UFUNCTION()
 	void SetTargetActor(AActor* NewTarget);
 

@@ -36,15 +36,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Replicated, Category = "Attributes")
 	float HealthMax;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Replicated, Category = "Attributes")
 		float Rage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Replicated, Category = "Attributes")
 		float RageMax;
 
 	UFUNCTION(NetMulticast, reliable)
-	void MulticastHealthChanged(AActor* Instigator, float NewHealth, float Delat);
+	void MulticastHealthChanged(AActor* Instigator, float NewHealth, float Delta);
 	void MulticastHealthChanged_Implementation(AActor* Instigator, float NewHealth, float Delta);
+
+
+	UFUNCTION(NetMulticast, Unreliable)
+		void MulticastRageChanged(AActor* Instigator, float NewRage, float Delta);
+	virtual void MulticastRageChanged_Implementation(AActor* Instigator, float NewRage, float Delta);
 
 public:	
 

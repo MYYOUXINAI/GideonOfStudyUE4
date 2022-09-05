@@ -9,3 +9,16 @@ void AMyPlayerController::SetPawn(APawn* InPawn)
 
 	OnPawnChanged.Broadcast(InPawn);
 }
+
+void AMyPlayerController::BeginPlayingState()
+{
+	BlueprintBeginPlayState();
+}
+
+
+void AMyPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	OnPlayerStateReceived.Broadcast(PlayerState);
+}

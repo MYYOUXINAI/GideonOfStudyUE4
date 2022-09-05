@@ -15,14 +15,25 @@ class STUDY_API AMyPowerUpActor : public AActor,public IMyInterface
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(ReplicatedUsing = "OnRep_IsActive"/*,Replicated*/)
+		bool bIsActive;
+
+	UFUNCTION()
+		void OnRep_IsActive();
+
+
+
 	UPROPERTY(EditAnywhere, Category = "PowerUP")
 	float RespawnTime;
 	FTimerHandle TimerHandle_RespawnTimer;
 
-	UFUNCTION()
+	UFUNCTION(NetMulticast, Unreliable)
 	void ShowPowerup();
+	virtual void ShowPowerup_Implementation();
 
+	UFUNCTION(NetMulticast, Unreliable)
 	void HideAndCoolPowerup();
+	virtual void HideAndCoolPowerup_Implementation();
 
 	void SetPowerupState(bool bNewIsActive);
 

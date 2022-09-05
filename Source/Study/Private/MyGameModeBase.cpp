@@ -10,6 +10,12 @@
 #include "EngineUtils.h"
 #include "MyCharacter.h"
 #include "MyPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "MySaveGame.h"
+#include "GameFramework/GameStateBase.h"
+#include "MyInterface.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+//#include "GameFramework/GameModeBase.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
@@ -27,6 +33,7 @@ AMyGameModeBase::AMyGameModeBase()
 
 	PlayerStateClass = AMyPlayerState::StaticClass();
 
+	SlotName = "SaveGame01";
 }
 
 
@@ -122,6 +129,24 @@ void AMyGameModeBase::RespawnPlayerElapsed(AController* Controller)
 
 
 
+void AMyGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+
+	AMyPlayerState* PS = NewPlayer->GetPlayerState<AMyPlayerState>();
+	if (PS)
+	{
+		PS->LoadPlayerState(CurrentSaveGame);
+	}
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+}
+
+void AMyGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	this->LoadSaveGame();
+}
+
 void AMyGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
 	AMyCharacter* Player = Cast<AMyCharacter>(VictimActor);
@@ -145,6 +170,85 @@ void AMyGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		{
 			PS->AddCredits(CreditsPerKill);
 		}
+	}	
+}
+
+
+void AMyGameModeBase::WirteSaveGame()
+{
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		AMyPlayerState* PS = Cast<AMyPlayerState>(GameState->PlayerArray[i]);
+		if (PS)
+		{
+			PS->SavePlayerState(CurrentSaveGame);
+			break;
+		}
 	}
-	
+
+	CurrentSaveGame->SaveActors.Empty();
+
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->Implements<UMyInterface>())	continue;
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.ActorTransform = Actor->GetTransform();
+
+		FMemoryWriter MemWriter(ActorData.byteData);
+
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		Ar.ArIsSaveGame = true;
+
+		Actor->Serialize(Ar);
+
+		CurrentSaveGame->SaveActors.Add(ActorData);
+	}
+
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
+}
+
+void AMyGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		CurrentSaveGame = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+		if (CurrentSaveGame == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("load game failed!!! please check it"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Load game succed!"));
+		}
+
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+			if (!Actor->Implements<UMyInterface>())	continue;
+
+			for (FActorSaveData ActorData : CurrentSaveGame->SaveActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.ActorTransform);
+
+					FMemoryReader MemReader(ActorData.byteData);
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					Ar.ArIsSaveGame = true;
+					Actor->Serialize(Ar);
+
+					IMyInterface::Execute_OnActorLoaded(Actor);
+
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		CurrentSaveGame = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+		UE_LOG(LogTemp, Warning, TEXT("Create save game successed!"));
+	}
 }

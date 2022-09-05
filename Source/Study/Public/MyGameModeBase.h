@@ -11,6 +11,7 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class UMySaveGame;
 /**
  * 
  */
@@ -21,6 +22,13 @@ class STUDY_API AMyGameModeBase : public AGameModeBase
 
 
 protected:
+
+	UPROPERTY()
+		FString SlotName;
+
+	UPROPERTY()
+		UMySaveGame* CurrentSaveGame;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
 		int32 CreditsPerKill;
 
@@ -54,6 +62,9 @@ protected:
 	void RespawnPlayerElapsed(AController* Controller);
 	
 public:
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)override;
+
+	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)override;
 
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 
@@ -64,4 +75,10 @@ public:
 	UFUNCTION(Exec)
 	void KillAll();
 	
+	UFUNCTION(BlueprintCallable, Category = "MySaveGame")
+		void WirteSaveGame();
+
+	UFUNCTION(BlueprintCallable, Category = "MySaveGame")
+		void LoadSaveGame();
+
 };

@@ -8,6 +8,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AMyPlayerState*, PlayerState, int32, NewCredits, int32, Delta);
 
+
+class UMySaveGame;
 /**
  * 
  */
@@ -17,8 +19,11 @@ class STUDY_API AMyPlayerState : public APlayerState
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Credits")
+	UPROPERTY(EditDefaultsOnly,ReplicatedUsing="OnRep_Credits", Category = "Credits"/*,Replicated*/)
 	int32 Credits;
+
+	UFUNCTION()
+	void OnRep_Credits(int OldCredits);
 
 public:
 	UFUNCTION(BlueprintCallable,Category="Credits")
@@ -33,6 +38,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "CustomEvents")
 		FOnCreditsChanged OnCreditsChanged;
 	
+	UFUNCTION(BlueprintNativeEvent)
+		void SavePlayerState(UMySaveGame* SaveObject);
+	virtual void SavePlayerState_Implementation(UMySaveGame* SaveObject);
+
+	UFUNCTION(BlueprintNativeEvent)
+		void LoadPlayerState(UMySaveGame* SaveObject);
+	virtual void LoadPlayerState_Implementation(UMySaveGame* SaveObject);
+
 	AMyPlayerState();
 
 };

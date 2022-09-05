@@ -40,6 +40,7 @@ void AMyAICharacter::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this, &AMyAICharacter::OnHealthChanged);
 }
 
+
 void AMyAICharacter::SetTargetActor(AActor* NewTarget)
 {
 	AAIController* AIC = Cast<AAIController>(GetController());
@@ -68,14 +69,19 @@ void AMyAICharacter::OnPawnSeen(APawn* Pawn)
 	{
 		SetTargetActor(Pawn);
 
-		UMyWorldUserWidget* NewWidget = CreateWidget<UMyWorldUserWidget>(GetWorld(), SpottedWidgetClass);
-		if (NewWidget)
-		{
-			NewWidget->AttachActor = this;
-			NewWidget->AddToViewport(10);
-		}
+		MulticastOnPawnSeen(Pawn);
 	}
 
+}
+
+void AMyAICharacter::MulticastOnPawnSeen_Implementation(APawn* Pawn)
+{
+	UMyWorldUserWidget* NewWidget = CreateWidget<UMyWorldUserWidget>(GetWorld(), SpottedWidgetClass);
+	if (NewWidget)
+	{
+		NewWidget->AttachActor = this;
+		NewWidget->AddToViewport(10);
+	}
 }
 
 void AMyAICharacter::OnHealthChanged(AActor* InstigatorActor, UMyAttributeComponent* OwningComp, float NewHealth, float Delta)

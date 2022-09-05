@@ -22,6 +22,12 @@ AMyItemChest::AMyItemChest()
 	MyRotator = 110.0f;
 
 	SetReplicates(true);
+
+}
+
+void AMyItemChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpened();
 }
 
 // Called when the game starts or when spawned

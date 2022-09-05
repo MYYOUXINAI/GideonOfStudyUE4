@@ -3,6 +3,7 @@
 
 #include "MyPowerUpActor.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AMyPowerUpActor::AMyPowerUpActor()
@@ -20,12 +21,25 @@ void AMyPowerUpActor::Interact_Implementation(APawn* InstigatorPawn)
 {
 
 }
-void AMyPowerUpActor::ShowPowerup()
+
+//void AMyPowerUpActor::ShowPowerup()
+//{
+//	/*SetPowerupState(true);*/
+//}
+
+void AMyPowerUpActor::ShowPowerup_Implementation()
 {
 	SetPowerupState(true);
 }
 
-void AMyPowerUpActor::HideAndCoolPowerup()
+//void AMyPowerUpActor::HideAndCoolPowerup()
+//{
+//	/*SetPowerupState(false);
+//
+//	GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &AMyPowerUpActor::ShowPowerup, RespawnTime);*/
+//}
+
+void AMyPowerUpActor::HideAndCoolPowerup_Implementation()
 {
 	SetPowerupState(false);
 
@@ -34,12 +48,22 @@ void AMyPowerUpActor::HideAndCoolPowerup()
 
 void AMyPowerUpActor::SetPowerupState(bool bNewIsActive)
 {
-	SetActorEnableCollision(bNewIsActive);
-
-	RootComponent->SetVisibility(bNewIsActive, true);
+	bIsActive = bNewIsActive;
+	OnRep_IsActive();
 }
 
+void AMyPowerUpActor::OnRep_IsActive()
+{
+	SetActorEnableCollision(bIsActive);
+	RootComponent->SetVisibility(bIsActive, true);
+}
 
+void AMyPowerUpActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMyPowerUpActor, bIsActive);
+}
 
 
 

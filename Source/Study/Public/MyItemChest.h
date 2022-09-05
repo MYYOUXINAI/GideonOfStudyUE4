@@ -17,11 +17,12 @@ class STUDY_API AMyItemChest : public AActor,public IMyInterface
 	void Interact_Implementation(APawn* IntigatorPawn);
 	
 public:	
-	// Sets default values for this actor's properties
 	AMyItemChest();
 
+	void OnActorLoaded_Implementation();
+
 protected:
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly,SaveGame)
 	bool bLidOpened;
 
 	UFUNCTION()

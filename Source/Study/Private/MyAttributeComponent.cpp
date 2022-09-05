@@ -129,6 +129,20 @@ bool UMyAttributeComponent::IsActorAlive(AActor* FromActor)
 	return false;
 }
 
+
+void UMyAttributeComponent::MulticastHealthChanged_Implementation(AActor* Instigator, float NewHealth, float Delta)
+{
+
+	OnHealthChanged.Broadcast(Instigator, this, NewHealth, Delta);
+	ApplyRage(Instigator, -Delta);
+}
+
+void UMyAttributeComponent::MulticastRageChanged_Implementation(AActor* Instigator, float NewRage, float Delta)
+{
+	OnRageChanged.Broadcast(Instigator, this, NewRage, Delta);
+}
+
+
 void UMyAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -136,13 +150,8 @@ void UMyAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(UMyAttributeComponent, Health);
 	DOREPLIFETIME(UMyAttributeComponent, HealthMax);
 
+	DOREPLIFETIME(UMyAttributeComponent, Rage);
+	DOREPLIFETIME(UMyAttributeComponent, RageMax);
+
 	//DOREPLIFETIME_CONDITION(UMyAttributeComponent, HealthMax, COND_InitialOnly);//to save resource
-}
-
-
-void UMyAttributeComponent::MulticastHealthChanged_Implementation(AActor* Instigator, float NewHealth, float Delta)
-{
-
-	OnHealthChanged.Broadcast(Instigator, this, NewHealth, Delta);
-	ApplyRage(Instigator, -Delta);
 }
