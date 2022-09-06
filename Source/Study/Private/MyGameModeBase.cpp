@@ -8,15 +8,18 @@
 #include "AI/MyAICharacter.h"
 #include "MyAttributeComponent.h"
 #include "EngineUtils.h"
+#include "MyActionComponent.h"
 #include "MyCharacter.h"
 #include "MyPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "MySaveGame.h"
 #include "GameFramework/GameStateBase.h"
 #include "MyInterface.h"
+#include "MyMonsterData.h"
 #include "TimerManager.h"
+#include "Engine/AssetManager.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
-//#include "GameFramework/GameModeBase.h"
+#include "Study/Study.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
@@ -106,14 +109,55 @@ void AMyGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryI
 {
 	if (QueryStatus != EEnvQueryStatus::Success)	return;
 
-
-	
-
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 
 	if (Locations.IsValidIndex(0))
 	{
-		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
+		if(MonsterTable)
+		{
+			TArray<FMonsterInforRow*>Rows;
+			MonsterTable->GetAllRows("", Rows);
+
+			const int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
+			const FMonsterInforRow* SelectedRow = Rows[RandomIndex];
+
+			UAssetManager* Manager = UAssetManager::GetIfValid();
+			if(Manager)
+			{
+				TArray<FName>Bundles;
+
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &AMyGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+				Manager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
+			}
+		}
+
+		//GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
+	}
+}
+
+void AMyGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
+{
+	UAssetManager* Manager = UAssetManager::GetIfValid();
+	if(Manager)
+	{
+		UMyMonsterData* MonsterData = Cast<UMyMonsterData>(Manager->GetPrimaryAssetObject(LoadedId));
+		if(MonsterData)
+		{
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+			if (NewBot)
+			{
+				LogOnScreen(this, FString::Printf(TEXT("Spawn enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterData)));
+
+				UMyActionComponent* ActionComp = Cast<UMyActionComponent>(NewBot->GetComponentByClass(UMyActionComponent::StaticClass()));
+				if (ActionComp)
+				{
+					for (const TSubclassOf<UMyAction>ActionClass : MonsterData->Actions)
+					{
+						ActionComp->AddAction(NewBot, ActionClass);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -127,8 +171,6 @@ void AMyGameModeBase::RespawnPlayerElapsed(AController* Controller)
 		RestartPlayer(Controller);
 	}
 }
-
-
 
 void AMyGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {

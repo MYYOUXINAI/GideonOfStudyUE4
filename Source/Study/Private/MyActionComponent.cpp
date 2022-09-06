@@ -60,6 +60,20 @@ void UMyActionComponent::AddAction(AActor* InstigatorActor, TSubclassOf<UMyActio
 
 }
 
+void UMyActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	TArray<UMyAction*>ActionCopy = Actions;
+	for (UMyAction* Action:ActionCopy)
+	{
+		if(Action && Action->isRunning())
+		{
+			Action->StopAction(GetOwner());
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
 
 void UMyActionComponent::RemoveAction( UMyAction* RemoveToAction)
 {

@@ -34,6 +34,7 @@ AMyMagicProjectile::AMyMagicProjectile()
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMyMagicProjectile::OnActorOverlap);
 
 	this->DamageValue = -50;
+	this->InitialLifeSpan = 10.0f;
 
 
 	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");

@@ -25,6 +25,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void AddAction(AActor* InstigatorActor, TSubclassOf<UMyAction> ActionClass);
 
+	UFUNCTION(BlueprintCallable,Category="Action")
+		void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 		void RemoveAction(UMyAction* RemoveToAction);

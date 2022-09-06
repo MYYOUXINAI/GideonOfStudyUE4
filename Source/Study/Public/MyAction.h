@@ -8,6 +8,7 @@
 #include "MyAction.generated.h"
 
 
+
 USTRUCT()
 struct FActionRepData
 {
@@ -25,6 +26,7 @@ public:
 /**
  * 
  */
+class UTexture2D;
 class UWorld;
 class UMyActionComponent;
 
@@ -41,7 +43,7 @@ protected:
 	float TimeStarted;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-		UTexture2D* Icon;
+		TSoftObjectPtr<UTexture2D> Icon;
 
 	UPROPERTY(Replicated)
 		UMyActionComponent* ActionComp;

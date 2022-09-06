@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "Engine/Engine.h"
+#include "Engine/EngineBaseTypes.h"
+#include "UObject/Object.h"
 
 
 static void LogOnScreen(UObject* WorldContext, FString Msg, FColor Color = FColor::White, float Duration = 0.5f)
