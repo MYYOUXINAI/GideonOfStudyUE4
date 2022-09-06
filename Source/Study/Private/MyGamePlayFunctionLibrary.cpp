@@ -3,6 +3,7 @@
 
 #include "MyGamePlayFunctionLibrary.h"
 #include "MyAttributeComponent.h"
+#include "Components/PrimitiveComponent.h"
 
 bool UMyGamePlayFunctionLibrary::ApplyDamege(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)
 {

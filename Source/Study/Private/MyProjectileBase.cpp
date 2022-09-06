@@ -6,9 +6,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/AudioComponent.h"
-#include "Components/AudioComponent.h"
-#include "Sound/SoundCue.h"
+
 
 // Sets default values
 AMyProjectileBase::AMyProjectileBase()

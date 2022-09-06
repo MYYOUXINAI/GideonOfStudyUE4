@@ -4,6 +4,9 @@
 #include "MyPowerUp_HealthPotion.h"
 #include "MyPlayerState.h"
 #include "MyAttributeComponent.h"
+#include "Components/StaticMeshComponent.h"
+
+#define LOCTEXT_NAMESPACE "InteractableActor"
 
 AMyPowerUp_HealthPotion::AMyPowerUp_HealthPotion()
 {
@@ -14,6 +17,7 @@ AMyPowerUp_HealthPotion::AMyPowerUp_HealthPotion()
 
 	CreditsAmount = 80;
 }
+
 
 void AMyPowerUp_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
@@ -38,3 +42,15 @@ void AMyPowerUp_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	
 }
 
+FText AMyPowerUp_HealthPotion::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	const UMyAttributeComponent* AttributeComp = Cast<UMyAttributeComponent>(UMyAttributeComponent::GetAttributes(InstigatorPawn));
+	if(AttributeComp && AttributeComp->IsFullHealth())
+	{
+		return LOCTEXT("HealthPotion_FullHealthWarning", "Already at full health");
+	}
+
+	return FText::Format(LOCTEXT("HealthPotion_InteractMessage", "Cost {0} Credits. Restores health to maximum"), CreditsAmount) ;
+}
+
+#undef LOCTEXT_NAMESPACE

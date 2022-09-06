@@ -20,10 +20,12 @@ class STUDY_API AMyPowerUp_HealthPotion : public AMyPowerUpActor
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* MeshComp;
-
+	
 	int32 CreditsAmount;
 
 public:
+	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	AMyPowerUp_HealthPotion();

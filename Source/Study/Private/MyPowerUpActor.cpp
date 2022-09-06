@@ -2,6 +2,7 @@
 
 
 #include "MyPowerUpActor.h"
+#include "TimerManager.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -15,6 +16,11 @@ AMyPowerUpActor::AMyPowerUpActor()
 	RespawnTime = 10.0f;
 
 	SetReplicates(true);
+}
+
+FText AMyPowerUpActor::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
 }
 
 void AMyPowerUpActor::Interact_Implementation(APawn* InstigatorPawn)

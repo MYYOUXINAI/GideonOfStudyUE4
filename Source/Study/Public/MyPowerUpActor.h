@@ -40,7 +40,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereComp;
 
-public:	
+public:
+
+	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 

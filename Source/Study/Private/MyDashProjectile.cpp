@@ -2,6 +2,7 @@
 
 
 #include "MyDashProjectile.h"
+#include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -19,7 +20,6 @@ AMyDashProjectile::AMyDashProjectile()
 void AMyDashProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
 	GetWorldTimerManager().SetTimer(TimerHandle_DelayedDetonate, this, &AMyDashProjectile::Explode, DetonateDelay);
 }
 

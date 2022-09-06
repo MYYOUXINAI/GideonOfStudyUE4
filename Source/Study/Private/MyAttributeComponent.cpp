@@ -3,6 +3,7 @@
 
 #include "MyAttributeComponent.h"
 #include "MyGameModeBase.h"
+#include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 
 

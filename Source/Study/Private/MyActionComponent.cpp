@@ -18,7 +18,7 @@ UMyActionComponent::UMyActionComponent()
 void UMyActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	//only run in server
 	if (GetOwner()->HasAuthority())
 	{

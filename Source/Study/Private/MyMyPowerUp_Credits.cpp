@@ -3,6 +3,7 @@
 
 #include "MyMyPowerUp_Credits.h"
 #include "MyPlayerState.h"
+#include "GameFramework/Pawn.h"
 
 
 AMyMyPowerUp_Credits::AMyMyPowerUp_Credits()

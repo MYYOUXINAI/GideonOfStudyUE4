@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MyAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 
 UMyBTTask_RangeAttack::UMyBTTask_RangeAttack()
